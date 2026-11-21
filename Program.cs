@@ -1,3 +1,6 @@
+using MVC_01.CustomMiddleware;
+using System.Runtime.ConstrainedExecution;
+
 namespace MVC_01
 {
     public class Program
@@ -18,7 +21,14 @@ namespace MVC_01
             //builder.Services.AddRazorPages();
 
             var app = builder.Build();
+            app.UseMiddleware<RequestTimmingMiddlewarw>();
+            //app.Use(async(conext , next) => 
+            //{
+            //    Console.WriteLine("Hello"); //Request
+            //    next.Invoke(conext);
+            //    Console.WriteLine("Bye"); //Response
 
+            //});
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
@@ -28,15 +38,27 @@ namespace MVC_01
             }
 
             app.UseHttpsRedirection();
+            
+
             app.UseRouting();
 
             app.UseAuthorization();
-
+            //app.UseAuthentication();
             app.MapStaticAssets();
+
+            app.MapControllerRoute(
+                name: "shop ",
+                pattern: "shop/{id}",
+                defaults: new
+                {
+                    controller = "Product",
+                    action = "GetProductById",
+                });
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}")
+                pattern: "{controller=Home}/{action=Index}/{id=int?}")
                 .WithStaticAssets();
+            
 
             app.Run();
         }
